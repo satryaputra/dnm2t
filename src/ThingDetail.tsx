@@ -12,7 +12,7 @@ import { Button } from "@/components/selia/button";
 import { useEffect, useState } from "react";
 import type { CheckIn, Thing } from "@/types";
 import { idbPromise } from "@/App";
-import { formatDate, getPercentage } from "@/lib/utils";
+import { formatDate, getPercentage, getStreaks } from "@/lib/utils";
 import { Stack } from "@/components/selia/stack";
 import {
   Item,
@@ -119,6 +119,8 @@ export default function ThingDetail({
 
   if (loading && !thing) return "Loading...";
 
+  const { current, longest } = getStreaks(thing!, checkIns);
+
   return (
     <div>
       <div className="flex justify-between items-center py-6">
@@ -171,7 +173,7 @@ export default function ThingDetail({
               </Stack>
             </ItemMedia>
             <ItemContent className="mt-1 flex flex-row items-end gap-2 pl-2">
-              <ItemTitle className="text-6xl font-bold">5</ItemTitle>
+              <ItemTitle className="text-6xl font-bold">{current}</ItemTitle>
               <ItemDescription>Days</ItemDescription>
             </ItemContent>
           </Item>
@@ -186,7 +188,7 @@ export default function ThingDetail({
               </Stack>
             </ItemMedia>
             <ItemContent className="mt-1 flex flex-row items-end gap-2 pl-2">
-              <ItemTitle className="text-6xl font-bold">12</ItemTitle>
+              <ItemTitle className="text-6xl font-bold">{longest}</ItemTitle>
               <ItemDescription>Days</ItemDescription>
             </ItemContent>
           </Item>

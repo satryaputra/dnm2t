@@ -7,6 +7,6 @@ export type Thing = {
 };
 
 export type CheckIn = {
-  thingsId: string;
+  thingId: string;
   date: string;
 };

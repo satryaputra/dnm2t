@@ -9,39 +9,21 @@ import {
 import { Button } from "@/components/selia/button";
 import { RadialBarChart, RadialBar, PolarAngleAxis } from "recharts";
 import type { CheckIn, Thing } from "@/types";
-import { getPercentage, isCheckedIn } from "@/lib/utils";
+import { getPercentage, getStreaks, isCheckedIn } from "@/lib/utils";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { RemoveIcon } from "@hugeicons/core-free-icons";
+import { FireIcon, RemoveIcon, RepeatIcon } from "@hugeicons/core-free-icons";
 
 export default function Things({
   things,
   loading,
   checkIns,
-  setCheckIns,
+  toggleCheck,
 }: {
   things: Thing[];
   loading: boolean;
   checkIns: CheckIn[];
-  setCheckIns: React.Dispatch<React.SetStateAction<CheckIn[]>>;
+  toggleCheck: (thingId: string) => Promise<void>;
 }) {
-  const today = new Date().toISOString().split("T")[0];
-
-  function check(thingId: string) {
-    setCheckIns((prev) => {
-      if (prev.some((ci) => ci.thingsId === thingId && ci.date === today)) {
-        return prev;
-      }
-
-      return [...prev, { thingsId: thingId, date: today }];
-    });
-  }
-
-  function uncheck(thingId: string) {
-    setCheckIns((prev) =>
-      prev.filter((ci) => !(ci.thingsId === thingId && ci.date === today)),
-    );
-  }
-
   return (
     <div className="mt-6 pb-28">
       <div className="flex w-full justify-between px-2 items-center">
@@ -70,6 +52,8 @@ export default function Things({
               const url = new URL(window.location.href);
               url.searchParams.set("id", thing.id);
 
+              const { current } = getStreaks(thing, checkIns);
+
               return (
                 <Item key={thing.id} className="items-center">
                   <ItemMedia
@@ -91,10 +75,26 @@ export default function Things({
                     >
                       {thing.title}
                     </ItemTitle>
-                    <ItemDescription className="text-sm flex items-center gap-2">
-                      <HugeiconsIcon icon={RemoveIcon} />
-                      No active streak
-                    </ItemDescription>
+                    {current > 0 && current <= 2 ? (
+                      <ItemDescription className="text-sm flex items-center gap-1 mt-1">
+                        <HugeiconsIcon icon={RepeatIcon} size={15} />
+                        {current} Day streak
+                      </ItemDescription>
+                    ) : current > 2 ? (
+                      <ItemDescription className="text-sm flex items-center gap-1 mt-1">
+                        <HugeiconsIcon
+                          icon={FireIcon}
+                          size={15}
+                          className="-mt-0.5 text-orange-400"
+                        />
+                        {current} Day streak
+                      </ItemDescription>
+                    ) : (
+                      <ItemDescription className="text-sm flex items-center gap-1 mt-1">
+                        <HugeiconsIcon icon={RemoveIcon} size={15} />
+                        No active streak
+                      </ItemDescription>
+                    )}
                   </ItemContent>
                   <ItemAction>
                     {isChecked ? (
@@ -102,7 +102,7 @@ export default function Things({
                         size="sm"
                         pill
                         variant={"outline"}
-                        onClick={() => uncheck(thing.id)}
+                        onClick={() => toggleCheck(thing.id)}
                       >
                         Uncheck
                       </Button>
@@ -111,7 +111,7 @@ export default function Things({
                         size="sm"
                         pill
                         variant={"primary"}
-                        onClick={() => check(thing.id)}
+                        onClick={() => toggleCheck(thing.id)}
                       >
                         Check In
                       </Button>

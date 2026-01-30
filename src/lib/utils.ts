@@ -12,7 +12,7 @@ export function formatDate(date: Date): string {
 
 export function isCheckedIn(thingId: string, checkIns: CheckIn[]): boolean {
   const today = formatDate(new Date());
-  return checkIns.some((ci) => ci.thingsId === thingId && ci.date === today);
+  return checkIns.some((ci) => ci.thingId === thingId && ci.date === today);
 }
 
 export function getTotalDays(startDate: string, endDate: string) {
@@ -33,7 +33,7 @@ export function getTotalDays(startDate: string, endDate: string) {
 }
 
 function getCompletedDays(thingId: string, checkIns: CheckIn[]) {
-  return checkIns.filter((ci) => ci.thingsId === thingId).length;
+  return checkIns.filter((ci) => ci.thingId === thingId).length;
 }
 
 export function getPercentage(thing: Thing, checkIns: CheckIn[]): number {
@@ -50,4 +50,41 @@ export function getActiveThings(
   return things.filter(
     (thing) => thing.startDate <= today && thing.endDate >= today,
   );
+}
+
+export function getStreaks(thing: Thing, checkIns: CheckIn[]) {
+  const dates = checkIns
+    .filter((ci) => ci.thingId === thing.id)
+    .map((ci) => ci.date)
+    .sort();
+
+  if (dates.length === 0) {
+    return { current: 0, longest: 0 };
+  }
+
+  let longest = 1;
+  let running = 1;
+
+  for (let i = 0; i < dates.length; i++) {
+    const diff = diffDays(dates[i - 1], dates[i]);
+
+    if (diff === 1) {
+      running++;
+    } else {
+      running = 1;
+    }
+
+    longest = Math.max(longest, running);
+  }
+
+  return { current: running, longest };
+}
+
+const DAY = 1000 * 60 * 60 * 24;
+
+function diffDays(date1: string, date2: string) {
+  const d1 = new Date(date1);
+  const d2 = new Date(date2);
+  const diffTime = Math.abs(d2.getTime() - d1.getTime());
+  return Math.ceil(diffTime / DAY);
 }

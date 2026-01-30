@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { formatDate, getActiveThings, getPercentage } from "./lib/utils";
 
 import { openDB } from "idb";
+import Seed from "./Seed";
 
 export const idbPromise = openDB("things-db", 1, {
   upgrade(db) {
@@ -57,7 +58,7 @@ export default function App() {
       url.searchParams.delete("id");
 
       window.history.pushState({}, "", url.toString());
-      fetchData()
+      fetchData();
     }
   }, [id]);
 
@@ -104,6 +105,10 @@ export default function App() {
     setLoading(false);
   }
 
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   async function onSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -131,9 +136,25 @@ export default function App() {
     setOpen(false);
   }
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  async function toggleCheck(thingId: string) {
+    setLoading(true);
+    const today = formatDate(new Date());
+    const db = await idbPromise;
+
+    const existing = await db.get("checkIns", [thingId, today]);
+    if (existing) {
+      await db.delete("checkIns", [thingId, today]);
+    } else {
+      const newCheckIn: CheckIn = {
+        thingId: thingId,
+        date: today,
+      };
+      await db.add("checkIns", newCheckIn);
+    }
+
+    await fetchData();
+    setLoading(false);
+  }
 
   return (
     <main className="w-md mx-auto min-h-svh pb-10">
@@ -143,7 +164,7 @@ export default function App() {
         <ThingDetail
           thingId={id}
           setId={setId}
-          checkIns={checkIns.filter((ci) => ci.thingsId === id)}
+          checkIns={checkIns.filter((ci) => ci.thingId === id)}
         />
       ) : (
         <>
@@ -153,7 +174,7 @@ export default function App() {
             things={things}
             loading={loading}
             checkIns={checkIns}
-            setCheckIns={setCheckIns}
+            toggleCheck={toggleCheck}
           />
 
           <Fab setOpen={setOpen} />
