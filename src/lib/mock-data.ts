@@ -1,7 +1,9 @@
 import type { CheckIn, Thing } from "@/types";
 
 const read10PagesId = crypto.randomUUID();
+// @ts-ignore - unused in mock data but kept for future use
 const exercise30MinId = crypto.randomUUID();
+// @ts-ignore - unused in mock data but kept for future use
 const practiceGuitarId = crypto.randomUUID();
 
 export const mockThings: Thing[] = [

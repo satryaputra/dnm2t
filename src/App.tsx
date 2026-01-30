@@ -9,7 +9,6 @@ import { useEffect, useState } from "react";
 import { formatDate, getActiveThings, getPercentage } from "./lib/utils";
 
 import { openDB } from "idb";
-import Seed from "./Seed";
 
 export const idbPromise = openDB("things-db", 1, {
   upgrade(db) {
