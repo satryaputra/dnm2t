@@ -1,6 +1,12 @@
 import {
   ArrowLeft02Icon,
   ChampionIcon,
+  CheckmarkBadge03Icon,
+  CheckmarkCircle01Icon,
+  CheckmarkCircle02Icon,
+  CheckmarkCircle03Icon,
+  CheckmarkCircle04Icon,
+  CircleIcon,
   Delete02Icon,
   FireIcon,
   Menu01Icon,
@@ -16,9 +22,11 @@ import { formatDate, getPercentage, getStreaks } from "@/lib/utils";
 import { Stack } from "@/components/selia/stack";
 import {
   Item,
+  ItemAction,
   ItemContent,
   ItemDescription,
   ItemMedia,
+  ItemMeta,
   ItemTitle,
 } from "@/components/selia/item";
 import {
@@ -39,6 +47,7 @@ import {
   AlertDialogTitle,
 } from "@/components/selia/alert-dialog";
 import { Strong } from "./components/selia/text";
+import { Text } from "./components/selia/text";
 
 export default function ThingDetail({
   thingId,
@@ -193,6 +202,38 @@ export default function ThingDetail({
             </ItemContent>
           </Item>
         </Stack>
+      </div>
+
+      <div className="mt-6 flex flex-col gap-2">
+        <Item>
+          <ItemContent className="w-full px-4 py-2">
+            <div className="flex justify-between w-full">
+              <Heading size={"md"}>Period 1</Heading>
+              <Text>
+                {thing?.startDate} {"->"} {thing?.endDate}
+              </Text>
+            </div>
+            <div className="flex gap-4 px-2 mt-6">
+              <div className="flex flex-col justify-center items-center gap-1">
+                <HugeiconsIcon
+                  icon={CheckmarkCircle04Icon}
+                  size={40}
+                  className="text-emerald-400"
+                />
+                <Text>21</Text>
+              </div>
+
+              <div className="flex flex-col justify-center items-center gap-1">
+                <HugeiconsIcon
+                  icon={CircleIcon}
+                  size={40}
+                  className="text-muted"
+                />
+                <Text>22</Text>
+              </div>
+            </div>
+          </ItemContent>
+        </Item>
       </div>
 
       <EditThingDialog
