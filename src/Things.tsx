@@ -10,6 +10,8 @@ import { Button } from "@/components/selia/button";
 import { RadialBarChart, RadialBar, PolarAngleAxis } from "recharts";
 import type { CheckIn, Thing } from "@/types";
 import { getPercentage, isCheckedIn } from "@/lib/utils";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { RemoveIcon } from "@hugeicons/core-free-icons";
 
 export default function Things({
   things,
@@ -73,22 +75,25 @@ export default function Things({
                   <ItemMedia
                     onClick={() => {
                       window.history.pushState({}, "", url.toString());
-                      window.dispatchEvent(new PopStateEvent('popstate'));
+                      window.dispatchEvent(new PopStateEvent("popstate"));
                     }}
                     className="cursor-pointer"
                   >
                     <Chart value={getPercentage(thing, checkIns)} />
                   </ItemMedia>
-                  <ItemContent
-                    onClick={() => {
-                      window.history.pushState({}, "", url.toString());
-                      window.dispatchEvent(new PopStateEvent('popstate'));
-                    }}
-                    className="cursor-pointer"
-                  >
-                    <ItemTitle>{thing.title}</ItemTitle>
-                    <ItemDescription>
-                      {thing.startDate} → {thing.endDate}
+                  <ItemContent>
+                    <ItemTitle
+                      onClick={() => {
+                        window.history.pushState({}, "", url.toString());
+                        window.dispatchEvent(new PopStateEvent("popstate"));
+                      }}
+                      className="cursor-pointer text-md font-semibold"
+                    >
+                      {thing.title}
+                    </ItemTitle>
+                    <ItemDescription className="text-sm flex items-center gap-2">
+                      <HugeiconsIcon icon={RemoveIcon} />
+                      No active streak
                     </ItemDescription>
                   </ItemContent>
                   <ItemAction>

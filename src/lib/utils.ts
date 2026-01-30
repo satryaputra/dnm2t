@@ -15,7 +15,7 @@ export function isCheckedIn(thingId: string, checkIns: CheckIn[]): boolean {
   return checkIns.some((ci) => ci.thingsId === thingId && ci.date === today);
 }
 
-function getTotalDays(startDate: string, endDate: string) {
+export function getTotalDays(startDate: string, endDate: string) {
   const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
   const start = new Date(startDate);

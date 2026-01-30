@@ -26,7 +26,7 @@ export default function Stats({
           <ItemMedia>
             <Stack direction="row" spacing={"sm"}>
               <HugeiconsIcon icon={Calendar04Icon} />
-              <p>Today's Focus</p>
+              <p className="font-semibold">Today's Focus</p>
             </Stack>
           </ItemMedia>
           <ItemContent className="mt-1">
@@ -40,7 +40,7 @@ export default function Stats({
           <ItemMedia>
             <Stack direction="row" spacing={"sm"}>
               <HugeiconsIcon icon={AutoConversationsIcon} />
-              <p>Overall</p>
+              <p className="font-semibold">Overall</p>
             </Stack>
           </ItemMedia>
           <ItemContent className="mt-1">

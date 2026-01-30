@@ -2,26 +2,26 @@ import Stats from "@/Stats";
 import Things from "@/Things";
 import Fab from "@/Fab";
 import AddThingDialog from "@/AddThingDialog";
-import ThingDetail from "@/Thing";
+import ThingDetail from "@/ThingDetail";
 
 import type { CheckIn, Thing } from "@/types";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState } from "react";
 import { formatDate, getActiveThings, getPercentage } from "./lib/utils";
 
 import { openDB } from "idb";
 
-const dbPromise = openDB("things-db", 1, {
+export const idbPromise = openDB("things-db", 1, {
   upgrade(db) {
     if (!db.objectStoreNames.contains("things")) {
       db.createObjectStore("things", { keyPath: "id" });
     }
 
     if (!db.objectStoreNames.contains("checkIns")) {
-      const store = db.createObjectStore("checkins", {
-        keyPath: ["thingsId", "date"],
+      const store = db.createObjectStore("checkIns", {
+        keyPath: ["thingId", "date"],
       });
 
-      store.createIndex("by-thingsId", "thingsId");
+      store.createIndex("by-thingId", "thingId");
       store.createIndex("by-date", "date");
     }
   },
@@ -50,6 +50,16 @@ export default function App() {
 
     return () => window.removeEventListener("popstate", updateId);
   }, []);
+
+  useEffect(() => {
+    if (!id && !loadingId) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("id");
+
+      window.history.pushState({}, "", url.toString());
+      fetchData()
+    }
+  }, [id]);
 
   /* Calculate functions */
 
@@ -81,20 +91,20 @@ export default function App() {
     setLoading(true);
 
     async function getAllThings() {
-      const db = await dbPromise;
+      const db = await idbPromise;
       setThings(await db.getAll("things"));
     }
 
     async function getAllCheckIns() {
-      const db = await dbPromise;
-      setCheckIns(await db.getAll("checkins"));
+      const db = await idbPromise;
+      setCheckIns(await db.getAll("checkIns"));
     }
 
     await Promise.all([getAllThings(), getAllCheckIns()]);
     setLoading(false);
   }
 
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+  async function onSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const form = new FormData(event.currentTarget);
@@ -115,7 +125,7 @@ export default function App() {
       createdAt: new Date().toISOString(),
     };
 
-    const db = await dbPromise;
+    const db = await idbPromise;
     await db.add("things", newThing);
     await fetchData();
     setOpen(false);
@@ -130,7 +140,11 @@ export default function App() {
       {loadingId ? (
         <p>Loading...</p>
       ) : id ? (
-        <ThingDetail thingId={id} />
+        <ThingDetail
+          thingId={id}
+          setId={setId}
+          checkIns={checkIns.filter((ci) => ci.thingsId === id)}
+        />
       ) : (
         <>
           <Stats pending={getPending()} percentage={getOverall()} />

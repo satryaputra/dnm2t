@@ -2,8 +2,8 @@ import {
   Dialog,
   DialogBody,
   DialogClose,
-  DialogPopup,
   DialogFooter,
+  DialogPopup,
 } from "@/components/selia/dialog";
 import { Field, FieldError, FieldLabel } from "@/components/selia/field";
 import { Fieldset, FieldsetLegend } from "@/components/selia/fieldset";
@@ -20,12 +20,16 @@ import { Text } from "@/components/selia/text";
 import { Button } from "@/components/selia/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Add01Icon, Remove01Icon } from "@hugeicons/core-free-icons";
+import type { Thing } from "@/types";
+import { getTotalDays } from "@/lib/utils";
 
-export default function AddThingDialog({
+export default function EditThingDialog({
+  thing,
   open,
   setOpen,
   onSubmit,
 }: {
+  thing: Thing;
   open: boolean;
   setOpen: (open: boolean) => void;
   onSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void;
@@ -34,9 +38,9 @@ export default function AddThingDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogPopup>
         <DialogBody>
-          <Form id="add-thing-form" className="w-full" onSubmit={onSubmit}>
+          <Form id="edit-thing-form" className="w-full" onSubmit={onSubmit}>
             <Fieldset>
-              <FieldsetLegend>New Thing</FieldsetLegend>
+              <FieldsetLegend>Edit Thing</FieldsetLegend>
 
               <Text>
                 Define what you want to do and how long you’ll commit to it.
@@ -44,13 +48,18 @@ export default function AddThingDialog({
 
               <Field className="flex-1">
                 <FieldLabel htmlFor="title">What you want to do?</FieldLabel>
-                <Input name="title" placeholder="e.g. Read 10 pages" required />
+                <Input
+                  name="title"
+                  placeholder="e.g. Read 10 pages"
+                  required
+                  defaultValue={thing.title}
+                />
                 <FieldError />
               </Field>
 
               <Field className={"pl-1"}>
                 <NumberField
-                  defaultValue={7}
+                  defaultValue={getTotalDays(thing.startDate, thing.endDate)}
                   min={3}
                   className={"flex flex-row items-center"}
                 >
@@ -72,7 +81,7 @@ export default function AddThingDialog({
         </DialogBody>
         <DialogFooter>
           <DialogClose>Close</DialogClose>
-          <Button type="submit" form="add-thing-form">
+          <Button type="submit" form="edit-thing-form">
             Submit
           </Button>
         </DialogFooter>
