@@ -156,7 +156,7 @@ export default function App() {
   }
 
   return (
-    <main className="w-md mx-auto min-h-svh pb-10">
+    <main className="px-4 sm:w-md mx-auto min-h-svh pb-10">
       {loadingId ? (
         <p>Loading...</p>
       ) : id ? (
