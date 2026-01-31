@@ -10,6 +10,8 @@ import {
   Delete02Icon,
   FireIcon,
   Menu01Icon,
+  MultiplicationSignCircleIcon,
+  MultiplicationSignIcon,
   PencilEdit01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -48,6 +50,26 @@ import {
 } from "@/components/selia/alert-dialog";
 import { Strong } from "./components/selia/text";
 import { Text } from "./components/selia/text";
+
+function formatDatePeriod(date: Date): string {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+  }).format(date);
+}
+
+function getDayArray(start: Date, end: Date) {
+  const result: number[] = [];
+  const current: Date = start;
+
+  while (start <= end) {
+    const date = current.getDate();
+    result.push(date);
+    current.setDate(date + 1);
+  }
+
+  return result;
+}
 
 export default function ThingDetail({
   thingId,
@@ -130,6 +152,26 @@ export default function ThingDetail({
 
   const { current, longest } = getStreaks(thing!, checkIns);
 
+  function getHistory(start: Date, end: Date, checkIns: CheckIn[]) {
+    const result: { label: number; status: "failed" | "done" | "pending" }[] =
+      [];
+    const current: Date = start;
+
+    while (start <= end) {
+      const today = new Date();
+      const isDone = checkIns.some((ci) => ci.date === formatDate(current));
+      const isExpired = current < today;
+      const date = current.getDate();
+      result.push({
+        label: date,
+        status: !isDone && isExpired ? "failed" : isDone ? "done" : "pending",
+      });
+      current.setDate(date + 1);
+    }
+
+    return result;
+  }
+
   return (
     <div>
       <div className="flex justify-between items-center py-6">
@@ -205,36 +247,56 @@ export default function ThingDetail({
       </div>
 
       <div className="mt-6 flex flex-col gap-2">
-        <Item>
-          <ItemContent className="w-full px-4 py-2">
+        <Heading size={"md"} className="pl-1">History</Heading>
+        <Item className="mt-2">
+          <ItemContent className="w-full p-2">
             <div className="flex justify-between w-full">
-              <Heading size={"md"}>Period 1</Heading>
+              <Heading size={"sm"}>Period 1</Heading>
               <Text>
-                {thing?.startDate} {"->"} {thing?.endDate}
+                {formatDatePeriod(new Date(thing!.startDate))} -{" "}
+                {formatDatePeriod(new Date(thing!.endDate))}
               </Text>
             </div>
-            <div className="flex gap-4 px-2 mt-6">
-              <div className="flex flex-col justify-center items-center gap-1">
-                <HugeiconsIcon
-                  icon={CheckmarkCircle04Icon}
-                  size={40}
-                  className="text-emerald-400"
-                />
-                <Text>21</Text>
-              </div>
-
-              <div className="flex flex-col justify-center items-center gap-1">
-                <HugeiconsIcon
-                  icon={CircleIcon}
-                  size={40}
-                  className="text-muted"
-                />
-                <Text>22</Text>
-              </div>
+            <div className="flex flex-wrap gap-4 px-2 mt-6">
+              {getHistory(
+                new Date(thing!.startDate),
+                new Date(thing!.endDate),
+                checkIns,
+              ).map((history, i) => {
+                return (
+                  <div
+                    key={i}
+                    className="flex flex-col justify-center items-center gap-1"
+                  >
+                    {history.status === "done" ? (
+                      <HugeiconsIcon
+                        icon={CheckmarkCircle02Icon}
+                        size={40}
+                        className="text-emerald-400"
+                      />
+                    ) : history.status === "failed" ? (
+                      <HugeiconsIcon
+                        icon={MultiplicationSignCircleIcon}
+                        size={40}
+                        className="text-red-400"
+                      />
+                    ) : (
+                      <HugeiconsIcon
+                        icon={CircleIcon}
+                        size={40}
+                        className="text-muted"
+                      />
+                    )}
+                    <Text>{history.label}</Text>
+                  </div>
+                );
+              })}
             </div>
           </ItemContent>
         </Item>
       </div>
+
+      {/* <Seed /> */}
 
       <EditThingDialog
         thing={thing!}
