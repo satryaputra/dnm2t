@@ -1,17 +1,12 @@
 import {
   ArrowLeft02Icon,
   ChampionIcon,
-  CheckmarkBadge03Icon,
-  CheckmarkCircle01Icon,
   CheckmarkCircle02Icon,
-  CheckmarkCircle03Icon,
-  CheckmarkCircle04Icon,
   CircleIcon,
   Delete02Icon,
   FireIcon,
   Menu01Icon,
   MultiplicationSignCircleIcon,
-  MultiplicationSignIcon,
   PencilEdit01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -24,11 +19,9 @@ import { formatDate, getPercentage, getStreaks } from "@/lib/utils";
 import { Stack } from "@/components/selia/stack";
 import {
   Item,
-  ItemAction,
   ItemContent,
   ItemDescription,
   ItemMedia,
-  ItemMeta,
   ItemTitle,
 } from "@/components/selia/item";
 import {
@@ -56,19 +49,6 @@ function formatDatePeriod(date: Date): string {
     month: "short",
     day: "numeric",
   }).format(date);
-}
-
-function getDayArray(start: Date, end: Date) {
-  const result: number[] = [];
-  const current: Date = start;
-
-  while (start <= end) {
-    const date = current.getDate();
-    result.push(date);
-    current.setDate(date + 1);
-  }
-
-  return result;
 }
 
 export default function ThingDetail({
