@@ -53,31 +53,46 @@ export function getActiveThings(
 }
 
 export function getStreaks(thing: Thing, checkIns: CheckIn[]) {
-  const dates = checkIns
-    .filter((ci) => ci.thingId === thing.id)
-    .map((ci) => ci.date)
-    .sort();
+  const dates = Array.from(
+    new Set(
+      checkIns
+        .filter((ci) => ci.thingId === thing.id)
+        .map((ci) => ci.date)
+        .sort(),
+    ),
+  );
 
   if (dates.length === 0) {
     return { current: 0, longest: 0 };
   }
 
   let longest = 1;
-  let running = 1;
+  let runningLongest = 1;
 
-  for (let i = 0; i < dates.length; i++) {
+  for (let i = 1; i < dates.length; i++) {
     const diff = diffDays(dates[i - 1], dates[i]);
-
-    if (diff === 1) {
-      running++;
-    } else {
-      running = 1;
-    }
-
-    longest = Math.max(longest, running);
+    runningLongest = diff === 1 ? runningLongest + 1 : 1;
+    longest = Math.max(longest, runningLongest);
   }
 
-  return { current: running, longest };
+  // Current streak is only counted if it reaches today.
+  const today = formatDate(new Date());
+  const lastDate = dates[dates.length - 1];
+  if (lastDate !== today) {
+    return { current: 0, longest };
+  }
+
+  let current = 1;
+  for (let i = dates.length - 1; i >= 1; i--) {
+    const diff = diffDays(dates[i - 1], dates[i]);
+    if (diff === 1) {
+      current++;
+    } else {
+      break;
+    }
+  }
+
+  return { current, longest };
 }
 
 const DAY = 1000 * 60 * 60 * 24;

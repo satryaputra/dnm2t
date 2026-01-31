@@ -36,7 +36,7 @@ export const mockCheckIns: CheckIn[] = [
   { thingId: read10PagesId, date: "2026-01-28" },
   { thingId: read10PagesId, date: "2026-01-29" },
   // { thingId: read10PagesId, date: "2026-01-30" },
-  // { thingId: read10PagesId, date: "2026-01-31" },
+  { thingId: read10PagesId, date: "2026-01-31" },
   // { thingId: read10PagesId, date: "2026-02-01" },
   // { thingId: read10PagesId, date: "2026-02-02" },
   // { thingId: read10PagesId, date: "2026-02-03" },
